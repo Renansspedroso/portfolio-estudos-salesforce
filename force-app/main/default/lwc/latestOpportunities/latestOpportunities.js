@@ -1,22 +1,24 @@
 import { LightningElement, wire } from 'lwc';
-import { NavigationMixin } from 'lightning/navigation'; // 1. Importamos o navegador
+import { NavigationMixin } from 'lightning/navigation';
 import getLatestOpportunities from '@salesforce/apex/OpportunityController.getLatestOpportunities';
 
-// 2. Adicionamos "NavigationMixin" aqui na definição da classe
 export default class LatestOpportunities extends NavigationMixin(LightningElement) {
     
-    @wire(getLatestOpportunities)
+    searchKey = ''; // 1. Variável para guardar o texto da busca
+
+    // 2. Passamos o parâmetro para o Apex. O '$' torna isso dinâmico (reativo).
+    @wire(getLatestOpportunities, { searchKey: '$searchKey' })
     opportunities;
 
-    // 3. Criamos a função que recebe o clique
+    // 3. Função que roda cada vez que você digita uma letra
+    handleSearchChange(event) {
+        // Atualiza a variável searchKey com o que foi digitado
+        this.searchKey = event.target.value;
+    }
+
     handleOpportunityClick(event) {
-        // Impede o navegador de seguir o link "#" padrão
         event.preventDefault();
-
-        // Pega o ID que vamos esconder no HTML (no passo 2)
         const oppId = event.target.dataset.id;
-
-        // Comando padrão do Salesforce para abrir registro
         this[NavigationMixin.Navigate]({
             type: 'standard__recordPage',
             attributes: {

@@ -1,12 +1,11 @@
-@isTest // Define que é uma classe de teste (não conta para limite de armazenamento)
+@isTest
 private class OpportunityControllerTest {
     
-    // Método de configuração: Cria dados "fakes" que só existem durante o teste
     @testSetup
     static void setup() {
         List<Opportunity> opps = new List<Opportunity>();
         
-        // Criamos 10 oportunidades para testar
+        // Cria 10 oportunidades genéricas "Opp Teste X"
         for(Integer i=0; i<10; i++) {
             opps.add(new Opportunity(
                 Name = 'Opp Teste ' + i,
@@ -15,25 +14,38 @@ private class OpportunityControllerTest {
                 Amount = 1000 * (i+1)
             ));
         }
+        
+        // Cria 1 oportunidade "Especial" para testarmos a busca específica
+        opps.add(new Opportunity(
+            Name = 'Oportunidade Unica e Especial',
+            StageName = 'Negotiation/Review',
+            CloseDate = Date.today(),
+            Amount = 50000
+        ));
+        
         insert opps;
     }
 
     @isTest
-    static void testGetLatestOpportunities() {
-        // 1. PREPARAÇÃO (Já feita no @testSetup)
-        
-        // 2. EXECUÇÃO
+    static void testSearchEmpty() {
         Test.startTest();
-        // Chamamos o método da sua classe original
-        List<Opportunity> resultado = OpportunityController.getLatestOpportunities();
+        // Testa passando string vazia (comportamento padrão)
+        List<Opportunity> resultado = OpportunityController.getLatestOpportunities('');
         Test.stopTest();
         
-        // 3. VERIFICAÇÃO (Asserts)
-        // A classe deve retornar no máximo 5 registros (conforme o LIMIT 5 da query)
-        System.assertEquals(5, resultado.size(), 'Deveria retornar apenas 5 oportunidades');
+        // Deve retornar 5 (limite da query)
+        System.assertEquals(5, resultado.size(), 'A busca vazia deve retornar 5 registros');
+    }
+
+    @isTest
+    static void testSearchSpecific() {
+        Test.startTest();
+        // Testa passando uma palavra chave
+        List<Opportunity> resultado = OpportunityController.getLatestOpportunities('Unica');
+        Test.stopTest();
         
-        // Verifica se o primeiro da lista é o mais recente (maior valor ou criado por último)
-        // Como criamos todos juntos, a ordem pode variar, mas garantimos que não veio vazio
-        System.assert(!resultado.isEmpty(), 'A lista não deveria estar vazia');
+        // Deve retornar apenas 1 (a nossa "Especial")
+        System.assertEquals(1, resultado.size(), 'A busca específica falhou');
+        System.assertEquals('Oportunidade Unica e Especial', resultado[0].Name, 'O nome retornado não confere');
     }
 }

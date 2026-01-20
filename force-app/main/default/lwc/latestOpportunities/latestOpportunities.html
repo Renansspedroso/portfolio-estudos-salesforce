@@ -2,6 +2,11 @@
     <lightning-card title="Últimas Oportunidades" icon-name="standard:opportunity">
         <div class="slds-p-around_medium">
 
+            <div class="slds-m-bottom_medium">
+                <lightning-input type="search" label="Buscar Oportunidade" placeholder="Digite o nome..."
+                    onchange={handleSearchChange}> </lightning-input>
+            </div>
+
             <template if:true={opportunities.data}>
                 <ul class="slds-has-dividers_around-space">
                     <template for:each={opportunities.data} for:item="opp">
