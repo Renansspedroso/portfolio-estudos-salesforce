@@ -1,0 +1,31 @@
+<template>
+    <lightning-card title="Últimas Oportunidades" icon-name="standard:opportunity">
+        <div class="slds-p-around_medium">
+
+            <template if:true={opportunities.data}>
+                <ul class="slds-has-dividers_around-space">
+                    <template for:each={opportunities.data} for:item="opp">
+                        <li key={opp.Id} class="slds-item">
+                            <article class="slds-tile slds-tile_board">
+                                <h3 class="slds-tile__title slds-truncate" title={opp.Name}>
+                                    <a href="#" onclick={handleOpportunityClick} data-id={opp.Id}>
+                                        {opp.Name}
+                                    </a>
+                                </h3>
+                                <div class="slds-tile__detail">
+                                    <p class="slds-text-heading_small">R$ {opp.Amount}</p>
+                                    <p class="slds-truncate" title={opp.StageName}>Fase: {opp.StageName}</p>
+                                </div>
+                            </article>
+                        </li>
+                    </template>
+                </ul>
+            </template>
+
+            <template if:true={opportunities.error}>
+                <p class="slds-text-color_error">Erro ao carregar oportunidades.</p>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>
